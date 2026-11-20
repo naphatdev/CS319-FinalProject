@@ -1,0 +1,7 @@
+export default function BookmarksPage() {
+  return (
+    <h1 className="text-2xl font-bold">
+      รายการที่บันทึกไว้
+    </h1>
+  );
+}
