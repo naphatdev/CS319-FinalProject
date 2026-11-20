@@ -3,6 +3,8 @@ import express, { type Request, type Response, type NextFunction } from "express
 import cors from "cors";
 import { reportRouter } from "./routes/reportRoutes.js";
 import { categoryRouter } from "./routes/categoryRoutes.js";
+import { authRouter } from "./routes/authRoutes.js";
+import { meRouter } from "./routes/meRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -16,6 +18,8 @@ app.get("/api/health", (_req: Request, res: Response) => {
 
 app.use("/api/reports", reportRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/me", meRouter);
 
 // ไม่มี route ไหนตรง
 app.use((_req: Request, res: Response) => {
