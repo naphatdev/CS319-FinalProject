@@ -1,17 +1,21 @@
-import { Link } from "react-router";
+import { useReports } from "../api/reports";
+import { useFilterStore } from "../stores/filterStore";
+import ReportCard from "../components/ReportCard";
 
 export default function ReportListPage() {
+  const categoryId = useFilterStore((s) => s.categoryId);
+  const status = useFilterStore((s) => s.status);
+  const { data, isPending, isError, error } = useReports({ categoryId, status });
+
+  if (isPending) return <span className="loading loading-spinner loading-lg" />;
+  if (isError) return <div role="alert" className="alert alert-error">{error.message}</div>;
+  if (data.length === 0) return <p>ยังไม่มีรายงาน</p>;
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">
-        รายการปัญหาชุมชน
-      </h1>
-
-      <p>หน้านี้จะแสดงรายงานจาก API ในขั้น P6</p>
-
-      <Link to="/reports/1" className="btn btn-primary">
-        ทดสอบเปิดรายละเอียดหมายเลข 1
-      </Link>
+    <div className="grid gap-4 md:grid-cols-2">
+      {data.map((report) => (
+        <ReportCard key={report.id} report={report} />
+      ))}
     </div>
   );
 }
