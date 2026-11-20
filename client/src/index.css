@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: community --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "community";
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(94% 0.025 195);
+  --color-base-300: oklch(86% 0.03 200);
+  --color-base-content: oklch(27% 0.03 220);
+  --color-primary: oklch(58% 0.12 185);
+  --color-primary-content: oklch(98% 0.01 185);
+  --color-secondary: oklch(72% 0.17 55);
+  --color-secondary-content: oklch(25% 0.05 55);
+  --color-accent: oklch(65% 0.2 15);
+  --color-accent-content: oklch(98% 0.01 15);
+  --color-neutral: oklch(30% 0.04 220);
+  --color-neutral-content: oklch(96% 0.01 220);
+  --color-info: oklch(70% 0.14 235);
+  --color-success: oklch(70% 0.16 150);
+  --color-warning: oklch(82% 0.16 85);
+  --color-error: oklch(65% 0.21 25);
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --border: 1px;
+}
+
+@theme {
+  --font-sans: "Noto Sans Thai", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+.hero-gradient {
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, oklch(85% 0.12 60 / 0.55), transparent 60%),
+    radial-gradient(50rem 30rem at 0% 110%, oklch(80% 0.12 185 / 0.6), transparent 60%),
+    linear-gradient(135deg, oklch(55% 0.12 190), oklch(42% 0.1 215));
+}
+
+.card-lift {
+  box-shadow: 0 2px 8px -2px oklch(30% 0.05 220 / 0.12);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -12px oklch(30% 0.05 220 / 0.25);
+}
