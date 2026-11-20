@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { Prisma, ReportStatus } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
+import { createReportSchema, updateStatusSchema } from "../validators/schemas.js";
 
 // เลือกเฉพาะ field ที่ตกลงไว้ในสัญญา API
 const reportSelect = {
@@ -73,4 +74,71 @@ export async function getReport(req: Request, res: Response) {
     return;
   }
   res.json(toReportDto(report));
+}
+
+export async function createReport(req: Request, res: Response) {
+  const userId = req.user?.id;
+  if (userId === undefined) {
+    res.status(401).json({ message: "กรุณาเข้าสู่ระบบ" });
+    return;
+  }
+  const parsed = createReportSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: parsed.error.issues[0]?.message ?? "ข้อมูลไม่ถูกต้อง" });
+    return;
+  }
+
+  const category = await prisma.category.findUnique({ where: { id: parsed.data.categoryId } });
+  if (!category) {
+    res.status(400).json({ message: "ไม่พบหมวดหมู่นี้" });
+    return;
+  }
+
+  const report = await prisma.report.create({
+    data: { ...parsed.data, authorId: userId },
+    select: reportSelect,
+  });
+  res.status(201).json(toReportDto(report));
+}
+
+export async function updateReportStatus(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ message: "id ต้องเป็นตัวเลข" });
+    return;
+  }
+  const parsed = updateStatusSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: "status ไม่ถูกต้อง" });
+    return;
+  }
+
+  const existing = await prisma.report.findUnique({ where: { id } });
+  if (!existing) {
+    res.status(404).json({ message: "ไม่พบรายงาน" });
+    return;
+  }
+
+  const report = await prisma.report.update({
+    where: { id },
+    data: { status: parsed.data.status },
+    select: reportSelect,
+  });
+  res.json(toReportDto(report));
+}
+
+export async function deleteReport(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ message: "id ต้องเป็นตัวเลข" });
+    return;
+  }
+  const existing = await prisma.report.findUnique({ where: { id } });
+  if (!existing) {
+    res.status(404).json({ message: "ไม่พบรายงาน" });
+    return;
+  }
+
+  await prisma.report.delete({ where: { id } });
+  res.status(204).end();
 }
